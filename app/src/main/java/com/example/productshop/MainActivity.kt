@@ -10,9 +10,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val createStoreButton: Button = findViewById(R.id.createStoreButton)
-        createStoreButton.setOnClickListener {
-            // Переход на экран магазина
             val intent = Intent(this, StoreActivity::class.java)
             startActivity(intent)
         }

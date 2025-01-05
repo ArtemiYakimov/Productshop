@@ -8,38 +8,43 @@ import android.provider.MediaStore
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 
-class StoreActivity : AppCompatActivity() {
+class ProductListActivity : AppCompatActivity() {
+
     private val products = mutableListOf<Product>()
     private lateinit var productListView: ListView
-    private lateinit var productImageView: ImageView
     private lateinit var productNameEditText: EditText
     private lateinit var productPriceEditText: EditText
     private lateinit var productDescriptionEditText: EditText
-    private lateinit var selectImageButton: Button
-    private lateinit var addProductButton: Button
-    private var selectedImageUri: Uri? = null
+    private lateinit var productImageView: ImageView
+    private var productImageUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_store)
+        setContentView(R.layout.activity_product_list)
 
+        productListView = findViewById(R.id.productListView)
         productNameEditText = findViewById(R.id.productNameEditText)
         productPriceEditText = findViewById(R.id.productPriceEditText)
         productDescriptionEditText = findViewById(R.id.productDescriptionEditText)
         productImageView = findViewById(R.id.productImageView)
-        selectImageButton = findViewById(R.id.selectImageButton)
-        addProductButton = findViewById(R.id.addProductButton)
-        productListView = findViewById(R.id.productListView)
 
-        selectImageButton.setOnClickListener {
+        val addButton: Button = findViewById(R.id.addButton)
+        addButton.setOnClickListener { addProduct() }
+
+        val exitButton: Button = findViewById(R.id.exitButton)
+        exitButton.setOnClickListener {
+            finish()
+            Toast.makeText(this, "Программа завершена", Toast.LENGTH_SHORT).show()
         }
 
-        addProductButton.setOnClickListener {
-            addProduct()
+        productImageView.setOnClickListener {
+            openGallery()
         }
 
-        findViewById<Button>(R.id.exitButton).setOnClickListener {
-            finish() // Закрывает приложение
+        productListView.setOnItemClickListener { _, _, position, _ ->
+            val intent = Intent(this, ProductDetailActivity::class.java)
+            intent.putExtra("product", products[position])
+            startActivity(intent)
         }
     }
 
@@ -48,12 +53,14 @@ class StoreActivity : AppCompatActivity() {
         val price = productPriceEditText.text.toString().toDoubleOrNull()
         val description = productDescriptionEditText.text.toString()
 
-        if (name.isNotEmpty() && price != null && selectedImageUri != null) {
+        if (name.isNotEmpty() && price != null && productImageUri != null) {
+            // Преобразуем Uri в строку
+            val product = Product(name, price, description, productImageUri.toString())
             products.add(product)
             updateProductList()
             clearInputs()
         } else {
-            Toast.makeText(this, "Пожалуйста, заполните все поля", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -66,19 +73,24 @@ class StoreActivity : AppCompatActivity() {
         productNameEditText.text.clear()
         productPriceEditText.text.clear()
         productDescriptionEditText.text.clear()
-        productImageView.setImageURI(null)
-        selectedImageUri = null
+        productImageView.setImageResource(0)
+        productImageUri = null
+    }
+
+    private fun openGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(intent, GALLERY_REQUEST_CODE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == IMAGE_PICK_CODE && resultCode == Activity.RESULT_OK) {
-            selectedImageUri = data?.data
-            productImageView.setImageURI(selectedImageUri)
+        if (requestCode == GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            productImageUri = data?.data
+            productImageView.setImageURI(productImageUri)
         }
     }
 
     companion object {
-        private const val IMAGE_PICK_CODE = 1000
+        private const val GALLERY_REQUEST_CODE = 100
     }
 }

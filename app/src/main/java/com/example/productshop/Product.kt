@@ -1,26 +1,21 @@
 package com.example.productshop
 
-import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
 
 data class Product(
     val name: String,
     val price: Double,
-    val imageUri: Uri,
-    val description: String = "" // Поле для описания
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString() ?: "",
         parcel.readDouble(),
-        parcel.readParcelable(Uri::class.java.classLoader) ?: Uri.EMPTY,
         parcel.readString() ?: ""
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(name)
         parcel.writeDouble(price)
-        parcel.writeParcelable(imageUri, flags)
         parcel.writeString(description)
     }
 

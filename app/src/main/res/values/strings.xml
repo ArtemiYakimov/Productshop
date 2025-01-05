@@ -1,13 +1,7 @@
 <resources>
-    <string name="app_name">Магазин продуктов</string>
-    <string name="welcome_message">Магазин продуктов</string>
-    <string name="create_store">Создать магазин</string>
     <string name="product_name_hint">Название продукта</string>
     <string name="product_price_hint">Цена продукта</string>
     <string name="select_image">Выбрать изображение</string>
-    <string name="add_product">Добавить</string>
     <string name="exit">Выход</string>
-    <string name="price_format">Цена: $%.2f</string>
     <string name="thank_you_message">Спасибо за использование приложения!</string>
-    <string name="product_description_hint">Краткое описание продукта</string>
 </resources>
